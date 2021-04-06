@@ -44,6 +44,22 @@ class ToolsToolBar(wx.ToolBar):
 
         cmd_icon = scale_bitmap(resourcePath("Images/command.png"), 16, 16)
         self.cmdtool = self.AddTool(wx.ID_ANY, "Run Command", cmd_icon, "Run Command")
+        self.EnableTool(self.cmdtool.Id, False)
+
+        self.AddSeparator()
+
+        up_icon = scale_bitmap(resourcePath("Images/upload.png"), 16, 16)
+        self.uptool = self.AddTool(wx.ID_ANY, "Upload APK", up_icon, "Upload APK")
+
+        self.AddSeparator()
+
+        update_icon = scale_bitmap(resourcePath("Images/update.png"), 16, 16)
+        self.updatetool = self.AddTool(
+            wx.ID_ANY,
+            "Update App to Latest on All Devices",
+            update_icon,
+            "Update App to Latest on All Devices",
+        )
 
         self.AddSeparator()
 
@@ -72,6 +88,8 @@ class ToolsToolBar(wx.ToolBar):
         self.Bind(wx.EVT_TOOL, self.Parent.onRun, self.rtool)
         self.Bind(wx.EVT_TOOL, self.Parent.updateGrids, self.rftool)
         self.Bind(wx.EVT_TOOL, self.Parent.onCommand, self.cmdtool)
+        self.Bind(wx.EVT_TOOL, self.Parent.uploadApplication, self.uptool)
+        self.Bind(wx.EVT_TOOL, self.Parent.updateApp, self.updatetool)
         self.search.Bind(wx.EVT_SEARCH, self.Parent.onSearch)
         self.search.Bind(wx.EVT_CHAR, self.onSearchChar)
         self.search.Bind(wx.EVT_SEARCH_CANCEL, self.Parent.onSearch)

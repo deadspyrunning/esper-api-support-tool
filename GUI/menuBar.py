@@ -67,9 +67,11 @@ class ToolMenuBar(wx.MenuBar):
         runMenu.Append(wx.ID_SEPARATOR)
         commandItem = wx.MenuItem(runMenu, wx.ID_ANY, "&Execute Command\tCtrl+Shift+C")
         self.command = runMenu.Append(commandItem)
+        self.command.Enable(False)
         runMenu.Append(wx.ID_SEPARATOR)
         cloneItem = wx.MenuItem(runMenu, wx.ID_ANY, "&Clone Template\tCtrl+Shift+T")
         self.clone = runMenu.Append(cloneItem)
+        self.clone.Enable(False)
         runMenu.Append(wx.ID_SEPARATOR)
         # installedDevices = wx.MenuItem(
         #     runMenu, wx.ID_ANY, "&Get Installed Devices\tCtrl+Shift+I"
@@ -80,8 +82,10 @@ class ToolMenuBar(wx.MenuBar):
             runMenu, wx.ID_ANY, "&Perform Collection Action (Preview)\tCtrl+Shift+F"
         )
         self.collection = runMenu.Append(collectionItem)
+        self.collection.Enable(False)
         eqlQueryItem = wx.MenuItem(runMenu, wx.ID_ANY, "&EQL Search (Preview)\tCtrl+F")
         self.eqlQuery = runMenu.Append(eqlQueryItem)
+        self.eqlQuery.Enable(False)
 
         viewMenu = wx.Menu()
         self.deviceColumns = viewMenu.Append(

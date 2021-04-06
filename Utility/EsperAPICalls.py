@@ -507,7 +507,7 @@ def getAllDevices(groupToUse, maxAttempt=Globals.MAX_RETRY):
 
 
 @api_tool_decorator
-def getAllApplications(maxAttempt=Globals.MAX_RETRY):
+def getAllApplications(appName=None, packageName=None, maxAttempt=Globals.MAX_RETRY):
     """ Make a API call to get all Applications belonging to the Enterprise """
     try:
         api_instance = esperclient.ApplicationApi(
@@ -518,6 +518,8 @@ def getAllApplications(maxAttempt=Globals.MAX_RETRY):
             try:
                 api_response = api_instance.get_all_applications(
                     Globals.enterprise_id,
+                    application_name=appName,
+                    package_name=packageName,
                     limit=Globals.limit,
                     offset=Globals.offset,
                     is_hidden=False,
@@ -774,11 +776,14 @@ def executeCommandOnGroup(
     schedule=None,
     schedule_type="IMMEDIATE",
     command_type="UPDATE_DEVICE_CONFIG",
+    groups=None,
     maxAttempt=Globals.MAX_RETRY,
 ):
     """ Execute a Command on a Group of Devices """
     statusList = []
-    for groupToUse in frame.sidePanel.selectedGroupsList:
+    if not groups:
+        groups = frame.sidePanel.selectedGroupsList
+    for groupToUse in groups:
         request = esperclient.V0CommandRequest(
             enterprise=Globals.enterprise_id,
             command_type="GROUP",
@@ -823,11 +828,14 @@ def executeCommandOnDevice(
     schedule=None,
     schedule_type="IMMEDIATE",
     command_type="UPDATE_DEVICE_CONFIG",
+    devices=None,
     maxAttempt=Globals.MAX_RETRY,
 ):
     """ Execute a Command on a Device """
     statusList = []
-    for deviceToUse in frame.sidePanel.selectedDevicesList:
+    if not devices:
+        devices = frame.sidePanel.selectedDevicesList
+    for deviceToUse in devices:
         request = esperclient.V0CommandRequest(
             enterprise=Globals.enterprise_id,
             command_type="DEVICE",
@@ -1216,3 +1224,25 @@ def getInstallDevices(version_id, application_id, maxAttempt=Globals.MAX_RETRY):
                 )
                 raise e
             time.sleep(1)
+
+
+@api_tool_decorator
+def uploadApplication(file, maxAttempt=Globals.MAX_RETRY):
+    try:
+        api_instance = esperclient.ApplicationApi(
+            esperclient.ApiClient(Globals.configuration)
+        )
+        enterprise_id = Globals.enterprise_id
+        api_response = None
+        for attempt in range(maxAttempt):
+            try:
+                api_response = api_instance.upload(enterprise_id, file)
+                break
+            except Exception as e:
+                if attempt == maxAttempt - 1:
+                    ApiToolLog().LogError(e)
+                    raise e
+                time.sleep(Globals.RETRY_SLEEP)
+        return api_response
+    except ApiException as e:
+        raise Exception("Exception when calling ApplicationApi->upload: %s\n" % e)

@@ -49,6 +49,16 @@ def TakeAction(frame, group, action, label, isDevice=False, isUpdate=False):
             frame.gridPanel.grid_2.Freeze()
         frame.CSVUploaded = False
 
+    if action == 90:
+        installApp(group, isDevice)
+        return
+    if action == 91:
+        updateAppAllDevices()
+        return
+    if action == 92:
+        uninstallApp(group, isDevice)
+        return
+
     deviceList = None
     if isDevice:
         deviceToUse = group
@@ -797,7 +807,7 @@ def setAllAppsState(frame, device, state):
 
 
 @api_tool_decorator
-def createCommand(frame, command_args, commandType, schedule, schType):
+def createCommand(frame, command_args, commandType, schedule, schType, listing=None):
     """ Attempt to apply a Command given user specifications """
     result, isGroup = confirmCommand(command_args, commandType, schedule, schType)
 
@@ -812,7 +822,7 @@ def createCommand(frame, command_args, commandType, schedule, schType):
         t = wxThread.GUIThread(
             frame,
             apiCalls.executeCommandOnGroup,
-            args=(frame, command_args, schedule, schType, commandType),
+            args=(frame, command_args, schedule, schType, commandType, listing),
             eventType=wxThread.myEVT_COMMAND,
             name="executeCommandOnGroup",
         )
@@ -820,7 +830,7 @@ def createCommand(frame, command_args, commandType, schedule, schType):
         t = wxThread.GUIThread(
             frame,
             apiCalls.executeCommandOnDevice,
-            args=(frame, command_args, schedule, schType, commandType),
+            args=(frame, command_args, schedule, schType, commandType, listing),
             eventType=wxThread.myEVT_COMMAND,
             name="executeCommandOnDevice",
         )
@@ -946,3 +956,93 @@ def setAppStateForSpecificAppListed(action, maxAttempt=Globals.MAX_RETRY):
             name="waitTillThreadsFinish%s" % state,
         )
         t.start()
+
+
+def installApp(listing, isDevice):
+    devices = []
+    if not isDevice:
+        for entry in listing:
+            resp = apiCalls.getAllDevices(entry)
+            devices = []
+            for device in resp.results:
+                if device.id not in devices:
+                    devices.append(device.id)
+    else:
+        devices = listing
+    installAppOnDevices(devices)
+
+
+def updateAppAllDevices():
+    resp = apiCalls.getAllDevices(None)
+    devices = []
+    for device in resp.results:
+        if device.id not in devices:
+            devices.append(device.id)
+    installAppOnDevices(devices)
+
+
+def installAppOnDevices(devices):
+    appList = apiCalls.getAllApplications(packageName=Globals.RESRICTED_APP_PKG_NAME)
+    appVersion = ""
+    for app in appList.results:
+        if app.package_name == Globals.RESRICTED_APP_PKG_NAME:
+            app.versions.sort(key=lambda s: list(map(int, s.split("."))))
+            appVersion = app.versions[-1]
+            break
+    # statusList = apiCalls.executeCommandOnDevice(
+    #     {
+    #         "app_version": appVersion,
+    #         "package_name": Globals.RESRICTED_APP_PKG_NAME,
+    #     },
+    #     command_type="INSTALL",
+    #     # devices=devices,
+    #     devices=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+    # )
+    createCommand(
+        Globals.frame,
+        {
+            "app_version": appVersion,
+            "package_name": Globals.RESRICTED_APP_PKG_NAME,
+        },
+        "INSTALL",
+        None,
+        "immediate",
+        # listing=devices,
+        listing=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+    )
+
+
+def uninstallApp(listing, isDevice):
+    devices = []
+    if not isDevice:
+        for entry in listing:
+            resp = apiCalls.getAllDevices(entry)
+            devices = []
+            for device in resp.results:
+                if device.id not in devices:
+                    devices.append(device.id)
+    else:
+        devices = listing
+    uninstallAppOnDevices(devices)
+
+
+def uninstallAppOnDevices(devices):
+    # statusList = apiCalls.executeCommandOnDevice(
+    #     {
+    #         "package_name": Globals.RESRICTED_APP_PKG_NAME,
+    #     },
+    #     command_type="UNINSTALL",
+    #     # devices=devices,
+    #     devices=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+    # )
+    createCommand(
+        Globals.frame,
+        {
+            "package_name": Globals.RESRICTED_APP_PKG_NAME,
+        },
+        "UNINSTALL",
+        None,
+        "immediate",
+        # listing=devices,
+        listing=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+    )

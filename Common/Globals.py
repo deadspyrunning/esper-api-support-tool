@@ -26,6 +26,8 @@ MAX_STATUS_CHAR = 80
 PRINT_RESPONSES = False
 PRINT_FUNC_DURATION = False
 
+RESRICTED_APP_PKG_NAME = "com.evozi.deviceid"
+
 DESCRIPTION = """Esper API Support Tool makes use of Esper's APIs to programmatically control and monitor 
 your enterprise's Android-based Dedicated Devices providing features that are not currently
 available on the Esper Console Dashboard."""
@@ -45,20 +47,23 @@ grid_color_lock = threading.Lock()
 GENERAL_ACTIONS = {
     "\t" + "* " * 8 + "General Actions " + "* " * 8: -1,
     "Show - Device Info & Network And Secruity Report": GeneralActions.SHOW_ALL_AND_GENERATE_REPORT.value,
-    "Action -> Set Kiosk Mode": GeneralActions.SET_KIOSK.value,
-    "Action -> Set Multi-App Mode": GeneralActions.SET_MULTI.value,
-    "Action -> Clear App Data": GeneralActions.CLEAR_APP_DATA.value,
-    "Action -> Set App's State to Disable": GeneralActions.SET_APP_STATE_DISABLE.value,
-    "Action -> Set App's State to Hide": GeneralActions.SET_APP_STATE_HIDE.value,
-    "Action -> Set App's State to Show": GeneralActions.SET_APP_STATE_SHOW.value,
+    "Action -> Install Zenput App": 90,
+    "Action -> Update Zenput App to Latest for all devices": 91,
+    "Action -> Uninstall Zenput App": 92,
+    # "Action -> Set Kiosk Mode": GeneralActions.SET_KIOSK.value,
+    # "Action -> Set Multi-App Mode": GeneralActions.SET_MULTI.value,
+    # "Action -> Clear App Data": GeneralActions.CLEAR_APP_DATA.value,
+    # "Action -> Set App's State to Disable": GeneralActions.SET_APP_STATE_DISABLE.value,
+    # "Action -> Set App's State to Hide": GeneralActions.SET_APP_STATE_HIDE.value,
+    # "Action -> Set App's State to Show": GeneralActions.SET_APP_STATE_SHOW.value,
 }
 
 GRID_ACTIONS = {
     "\t" + "* " * 8 + "Grid Actions " + "* " * 8: -1,
-    "Action -> Modify Device Alias & Tags": GridActions.MODIFY_ALIAS_AND_TAGS.value,
-    "Action -> Set All Apps' State to Disable": GridActions.SET_APP_STATE_DISABLE.value,
-    "Action -> Set All Apps' State to Hide": GridActions.SET_APP_STATE_HIDE.value,
-    "Action -> Set All Apps' State to Show": GridActions.SET_APP_STATE_SHOW.value,
+    # "Action -> Modify Device Alias & Tags": GridActions.MODIFY_ALIAS_AND_TAGS.value,
+    # "Action -> Set All Apps' State to Disable": GridActions.SET_APP_STATE_DISABLE.value,
+    # "Action -> Set All Apps' State to Hide": GridActions.SET_APP_STATE_HIDE.value,
+    # "Action -> Set All Apps' State to Show": GridActions.SET_APP_STATE_SHOW.value,
     # "Action -> Set Specific Apps' State to Hide": 50,
 }
 

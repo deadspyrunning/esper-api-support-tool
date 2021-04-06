@@ -44,6 +44,7 @@ from pathlib import Path
 from Utility.ApiToolLogging import ApiToolLog
 from Utility.crypto import crypto
 from Utility.EsperAPICalls import (
+    executeCommandOnDevice,
     getInstallDevices,
     setAppState,
     setKiosk,
@@ -52,6 +53,7 @@ from Utility.EsperAPICalls import (
     getAllDevices,
     getAllGroups,
     getAllApplications,
+    uploadApplication,
     validateConfiguration,
     getTokenInfo,
     clearAppData,
@@ -61,6 +63,8 @@ from Utility.EastUtility import (
     createCommand,
     iterateThroughGridRows,
     processInstallDevices,
+    uninstallApp,
+    updateAppAllDevices,
 )
 from Utility.Resource import (
     checkForInternetAccess,
@@ -2097,16 +2101,16 @@ class NewFrameLayout(wx.Frame):
         self.frame_toolbar.EnableTool(self.frame_toolbar.otool.Id, state)
         self.frame_toolbar.EnableTool(self.frame_toolbar.rtool.Id, state)
         self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, state)
-        self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, state)
+        # self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, state)
 
         self.menubar.fileOpenConfig.Enable(state)
         self.menubar.pref.Enable(state)
-        self.menubar.collection.Enable(state)
-        self.menubar.eqlQuery.Enable(state)
+        # self.menubar.collection.Enable(state)
+        # self.menubar.eqlQuery.Enable(state)
         self.menubar.run.Enable(state)
         # self.menubar.installedDevices.Enable(state)
-        self.menubar.clone.Enable(state)
-        self.menubar.command.Enable(state)
+        # self.menubar.clone.Enable(state)
+        # self.menubar.command.Enable(state)
 
     def onInstalledDevices(self, event):
         with InstalledDevicesDlg(self.sidePanel.apps) as dlg:
@@ -2137,3 +2141,31 @@ class NewFrameLayout(wx.Frame):
                                 wx.ICON_INFORMATION,
                             )
                         )
+
+    def uploadApplication(self, event):
+        with wx.FileDialog(
+            self,
+            "Upload APK",
+            wildcard="APK files (*.apk)|*.apk",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            defaultDir=str(self.defaultDir),
+        ) as fileDialog:
+            result = fileDialog.ShowModal()
+            if result == wx.ID_OK:
+                apk_path = fileDialog.GetPath()
+                resp = uploadApplication(apk_path)
+                if resp:
+                    pass
+                else:
+                    displayMessageBox(
+                        (
+                            "ERROR: Failed to upload apk. Please try again!",
+                            wx.ICON_ERROR,
+                        )
+                    )
+
+    def updateApp(self, event):
+        updateAppAllDevices()
+
+    def uninstallApp(self, event):
+        uninstallApp()
