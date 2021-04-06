@@ -972,13 +972,41 @@ def installApp(listing, isDevice):
     installAppOnDevices(devices)
 
 
-def updateAppAllDevices():
-    resp = apiCalls.getAllDevices(None)
-    devices = []
-    for device in resp.results:
-        if device.id not in devices:
-            devices.append(device.id)
-    installAppOnDevices(devices)
+def updateAppAllDevices(maxAttempt=Globals.MAX_RETRY):
+    resp = None
+    api_instance = esperclient.DeviceApi(esperclient.ApiClient(Globals.configuration))
+    for attempt in range(maxAttempt):
+        try:
+            resp = api_instance.get_all_devices(
+                Globals.enterprise_id,
+                limit=Globals.limit,
+                offset=Globals.offset,
+            )
+            break
+        except Exception as e:
+            if attempt == maxAttempt - 1:
+                ApiToolLog().LogError(e)
+                raise e
+            time.sleep(Globals.RETRY_SLEEP)
+    if resp:
+        devices = []
+        for device in resp.results:
+            if device.id not in devices:
+                devices.append(device.id)
+        installAppOnDevices(devices)
+
+
+def uploadAppToEndpoint(path):
+    resp = apiCalls.uploadApplication(path)
+    if resp:
+        displayMessageBox(("Application has been uploaded", wx.ICON_INFORMATION))
+    else:
+        displayMessageBox(
+            (
+                "ERROR: Failed to upload apk. Please try again!",
+                wx.ICON_ERROR,
+            )
+        )
 
 
 def installAppOnDevices(devices):
@@ -986,30 +1014,24 @@ def installAppOnDevices(devices):
     appVersion = ""
     for app in appList.results:
         if app.package_name == Globals.RESRICTED_APP_PKG_NAME:
-            app.versions.sort(key=lambda s: list(map(int, s.split("."))))
+            app.versions.sort(key=lambda s: s.version_code.split("."))
             appVersion = app.versions[-1]
             break
-    # statusList = apiCalls.executeCommandOnDevice(
-    #     {
-    #         "app_version": appVersion,
-    #         "package_name": Globals.RESRICTED_APP_PKG_NAME,
-    #     },
-    #     command_type="INSTALL",
-    #     # devices=devices,
-    #     devices=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
-    # )
-    createCommand(
-        Globals.frame,
-        {
-            "app_version": appVersion,
-            "package_name": Globals.RESRICTED_APP_PKG_NAME,
-        },
-        "INSTALL",
-        None,
-        "immediate",
-        # listing=devices,
-        listing=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
-    )
+    if appVersion:
+        createCommand(
+            Globals.frame,
+            {
+                "app_version": appVersion.version_code,
+                "package_name": Globals.RESRICTED_APP_PKG_NAME,
+            },
+            "INSTALL",
+            None,
+            "immediate",
+            # listing=devices,
+            listing=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+        )
+    else:
+        displayMessageBox(("Failed to find application!", wx.ICON_ERROR))
 
 
 def uninstallApp(listing, isDevice):
@@ -1027,14 +1049,6 @@ def uninstallApp(listing, isDevice):
 
 
 def uninstallAppOnDevices(devices):
-    # statusList = apiCalls.executeCommandOnDevice(
-    #     {
-    #         "package_name": Globals.RESRICTED_APP_PKG_NAME,
-    #     },
-    #     command_type="UNINSTALL",
-    #     # devices=devices,
-    #     devices=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
-    # )
     createCommand(
         Globals.frame,
         {

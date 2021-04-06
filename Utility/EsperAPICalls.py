@@ -507,7 +507,7 @@ def getAllDevices(groupToUse, maxAttempt=Globals.MAX_RETRY):
 
 
 @api_tool_decorator
-def getAllApplications(appName=None, packageName=None, maxAttempt=Globals.MAX_RETRY):
+def getAllApplications(appName="", packageName="", maxAttempt=Globals.MAX_RETRY):
     """ Make a API call to get all Applications belonging to the Enterprise """
     try:
         api_instance = esperclient.ApplicationApi(

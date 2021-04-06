@@ -65,6 +65,7 @@ from Utility.EastUtility import (
     processInstallDevices,
     uninstallApp,
     updateAppAllDevices,
+    uploadAppToEndpoint,
 )
 from Utility.Resource import (
     checkForInternetAccess,
@@ -2153,19 +2154,19 @@ class NewFrameLayout(wx.Frame):
             result = fileDialog.ShowModal()
             if result == wx.ID_OK:
                 apk_path = fileDialog.GetPath()
-                resp = uploadApplication(apk_path)
-                if resp:
-                    pass
-                else:
-                    displayMessageBox(
-                        (
-                            "ERROR: Failed to upload apk. Please try again!",
-                            wx.ICON_ERROR,
-                        )
-                    )
+                t = wxThread.GUIThread(self, uploadAppToEndpoint, (apk_path))
+                t.start()
 
     def updateApp(self, event):
-        updateAppAllDevices()
+        if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:
+            t = wxThread.GUIThread(self, updateAppAllDevices, None)
+            t.start()
+        else:
+            displayMessageBox(("Please select a group and or devices!", wx.ICON_ERROR))
 
     def uninstallApp(self, event):
-        uninstallApp()
+        if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:
+            t = wxThread.GUIThread(self, uninstallApp, None)
+            t.start()
+        else:
+            displayMessageBox(("Please select a group and or devices!", wx.ICON_ERROR))
