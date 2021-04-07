@@ -2158,10 +2158,10 @@ class NewFrameLayout(wx.Frame):
                             )
                         )
 
-    def uploadApplication(self, event, joinThread=False):
+    def uploadApplication(self, event, title="", joinThread=False):
         with wx.FileDialog(
             self,
-            "Upload APK",
+            "Upload APK" if not title else title,
             wildcard="APK files (*.apk)|*.apk",
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             defaultDir=str(self.defaultDir),
@@ -2177,7 +2177,9 @@ class NewFrameLayout(wx.Frame):
     def updateApp(self, event):
         self.toggleEnabledState(False)
         self.uploadApplication(None, joinThread=True)
-        t = wxThread.GUIThread(self, updateAppAllDevices, None)
+        t = wxThread.GUIThread(
+            self, updateAppAllDevices, (None, "Upload APK (OPTIONAL)")
+        )
         t.start()
 
     def uninstallApp(self, event):

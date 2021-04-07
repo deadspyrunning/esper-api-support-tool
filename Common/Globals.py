@@ -61,7 +61,7 @@ GENERAL_ACTIONS = {
 }
 
 GRID_ACTIONS = {
-    "\t" + "* " * 8 + "Grid Actions " + "* " * 8: -1,
+    # "\t" + "* " * 8 + "Grid Actions " + "* " * 8: -1,
     # "Action -> Modify Device Alias & Tags": GridActions.MODIFY_ALIAS_AND_TAGS.value,
     # "Action -> Set All Apps' State to Disable": GridActions.SET_APP_STATE_DISABLE.value,
     # "Action -> Set All Apps' State to Hide": GridActions.SET_APP_STATE_HIDE.value,
