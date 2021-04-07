@@ -49,13 +49,13 @@ def TakeAction(frame, group, action, label, isDevice=False, isUpdate=False):
             frame.gridPanel.grid_2.Freeze()
         frame.CSVUploaded = False
 
-    if action == 90:
+    if action == 20:
         installApp(group, isDevice)
         return
-    if action == 91:
+    if action == 21:
         updateAppAllDevices()
         return
-    if action == 92:
+    if action == 22:
         uninstallApp(group, isDevice)
         return
 
@@ -1028,7 +1028,7 @@ def installAppOnDevices(devices):
             None,
             "immediate",
             # listing=devices,
-            listing=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+            listing=["d3f31a41-d648-4d36-b47f-287aa605e9c1"],
         )
     else:
         displayMessageBox(("Failed to find application!", wx.ICON_ERROR))
@@ -1058,5 +1058,5 @@ def uninstallAppOnDevices(devices):
         None,
         "immediate",
         # listing=devices,
-        listing=["25dca2b1-9e38-4d9c-bf98-cd12e3cb827d"],
+        listing=["d3f31a41-d648-4d36-b47f-287aa605e9c1"],
     )
