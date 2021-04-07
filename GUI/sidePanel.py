@@ -367,13 +367,17 @@ class SidePanel(wx.Panel):
                 if (
                     key != "app_name"
                     and key != "app_state"
+                    and key != "id"
                     and key not in self.appChoice.Items
                     and (
                         (Globals.SHOW_PKG_NAME and " (" in key)
                         or (not Globals.SHOW_PKG_NAME and " (" not in key)
                     )
                 ):
-                    self.appChoice.Append(key, value)
+                    if " v" in key and "id" in entry:
+                        self.appChoice.Append(key, entry["id"])
+                    else:
+                        self.appChoice.Append(key, value)
                     break
             num += 1
             val = percent + int(float(num / len(self.apps) / 2) * 100)
@@ -389,6 +393,7 @@ class SidePanel(wx.Panel):
             or clientData == GeneralActions.SET_APP_STATE_DISABLE.value
             or clientData == GeneralActions.SET_APP_STATE_HIDE.value
             or clientData == GeneralActions.SET_APP_STATE_SHOW.value
+            or clientData == 20
         ) and clientData < GridActions.MODIFY_ALIAS_AND_TAGS.value:
             # self.parentFrame.PopulateApps()
             self.appChoice.Enable(True)

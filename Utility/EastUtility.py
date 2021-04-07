@@ -976,7 +976,10 @@ def installApp(listing, isDevice):
                     devices.append(device.id)
     else:
         devices = listing
-    installAppOnDevices(devices)
+    appVerToUse = Globals.frame.sidePanel.appChoice.GetClientData(
+        Globals.frame.sidePanel.appChoice.GetSelection()
+    )
+    installAppOnDevices(devices, appVerToUse)
 
 
 def updateAppAllDevices(maxAttempt=Globals.MAX_RETRY):
@@ -1016,14 +1019,17 @@ def uploadAppToEndpoint(path):
         )
 
 
-def installAppOnDevices(devices):
-    appList = apiCalls.getAllApplications(packageName=Globals.RESRICTED_APP_PKG_NAME)
-    appVersion = ""
-    for app in appList.results:
-        if app.package_name == Globals.RESRICTED_APP_PKG_NAME:
-            app.versions.sort(key=lambda s: s.version_code.split("."))
-            appVersion = app.versions[-1]
-            break
+def installAppOnDevices(devices, version=None):
+    appVersion = version
+    if not appVersion:
+        appList = apiCalls.getAllApplications(
+            packageName=Globals.RESRICTED_APP_PKG_NAME
+        )
+        for app in appList.results:
+            if app.package_name == Globals.RESRICTED_APP_PKG_NAME:
+                app.versions.sort(key=lambda s: s.version_code.split("."))
+                appVersion = app.versions[-1]
+                break
     if appVersion:
         createCommand(
             Globals.frame,

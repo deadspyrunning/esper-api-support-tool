@@ -160,6 +160,7 @@ CSV_NETWORK_ATTR_NAME = {
     "IPv6 Mac Address(es)": "macAddress",
 }
 BLACKLIST_PACKAGE_NAME = ["io.shoonya.shoonyadpc"]
+WHITELIST_PACKAGE_NAME = [RESRICTED_APP_PKG_NAME]
 
 CMD_DEVICE_TYPES = ["All", "Active", "Inactive"]
 

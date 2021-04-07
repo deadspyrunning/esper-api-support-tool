@@ -189,7 +189,11 @@ def getdeviceapps(deviceid, createAppList=True, useEnterprise=False):
         for app in json_resp["results"]:
             entry = None
             if "application" in app:
-                if app["application"]["package_name"] in Globals.BLACKLIST_PACKAGE_NAME:
+                if (
+                    app["application"]["package_name"] in Globals.BLACKLIST_PACKAGE_NAME
+                    or app["application"]["package_name"]
+                    not in Globals.WHITELIST_PACKAGE_NAME
+                ):
                     continue
                 appName = app["application"]["application_name"]
                 appPkgName = appName + (" (%s)" % app["application"]["package_name"])
@@ -219,7 +223,11 @@ def getdeviceapps(deviceid, createAppList=True, useEnterprise=False):
                     + version
                 )
             else:
-                if app["package_name"] in Globals.BLACKLIST_PACKAGE_NAME:
+                if (
+                    app["application"]["package_name"] in Globals.BLACKLIST_PACKAGE_NAME
+                    or app["application"]["package_name"]
+                    not in Globals.WHITELIST_PACKAGE_NAME
+                ):
                     continue
                 appName = app["app_name"]
                 appPkgName = appName + (" (%s)" % app["package_name"])

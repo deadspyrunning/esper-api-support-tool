@@ -2,6 +2,7 @@
 
 import sys
 import threading
+import esperclient
 import wx
 import time
 import csv
@@ -45,6 +46,7 @@ from Utility.ApiToolLogging import ApiToolLog
 from Utility.crypto import crypto
 from Utility.EsperAPICalls import (
     executeCommandOnDevice,
+    getAppVersions,
     getInstallDevices,
     setAppState,
     setKiosk,
@@ -1056,9 +1058,40 @@ class NewFrameLayout(wx.Frame):
 
     @api_tool_decorator
     def addAppToAppList(self, app):
+        entry = self.formAppEntry(app)
+        if (
+            entry["package_name"] in Globals.BLACKLIST_PACKAGE_NAME
+            or entry["package_name"] not in Globals.WHITELIST_PACKAGE_NAME
+        ):
+            return
+        resp = getAppVersions(entry["id"])
+        for app in resp.results:
+            appEntry = {"id": app.id}
+            for key, val in entry.items():
+                if key == "id":
+                    continue
+                appEntry[key] = val
+            if appEntry and appEntry not in self.sidePanel.enterpriseApps:
+                self.sidePanel.enterpriseApps.append(appEntry)
+            if (
+                appEntry
+                and self.sidePanel.selectedDevicesList
+                and appEntry not in self.sidePanel.selectedDeviceApps
+            ):
+                self.sidePanel.selectedDeviceApps.append(appEntry)
+            if (
+                appEntry
+                and self.sidePanel.selectedGroupsList
+                and appEntry not in self.sidePanel.knownApps
+            ):
+                self.sidePanel.knownApps.append(appEntry)
+
+    def formAppEntry(self, app, appName=None, appPkgName=None):
         entry = None
         if type(app) == dict and "application" in app:
             appName = app["application"]["application_name"]
+            if "version_code" in app["application"]:
+                appName += " v%s" % app["application"]["version_code"]
             appPkgName = appName + (" (%s)" % app["application"]["package_name"])
             entry = {
                 "app_name": app["application"]["application_name"],
@@ -1069,38 +1102,30 @@ class NewFrameLayout(wx.Frame):
             }
         elif hasattr(app, "application_name"):
             appName = app.application_name
+            if app.versions:
+                appName += " v%s" % app.versions[0].version_code
             appPkgName = appName + (" (%s)" % app.package_name)
             entry = {
                 "app_name": app.application_name,
                 appName: app.package_name,
                 appPkgName: app.package_name,
-                "versions": app.versions,
+                "package_name": app.package_name,
                 "id": app.id,
             }
         else:
             appName = app["app_name"]
             appPkgName = appName + (" (%s)" % app["package_name"])
+            if "version_code" in app:
+                appName += " v%s" % app["version_code"]
             entry = {
                 "app_name": app["app_name"],
                 appName: app["package_name"],
                 appPkgName: app["package_name"],
+                "package_name": app["package_name"],
                 "app_state": app["state"],
                 "id": app["id"],
             }
-        if entry and entry not in self.sidePanel.enterpriseApps:
-            self.sidePanel.enterpriseApps.append(entry)
-        if (
-            entry
-            and self.sidePanel.selectedDevicesList
-            and entry not in self.sidePanel.selectedDeviceApps
-        ):
-            self.sidePanel.selectedDeviceApps.append(entry)
-        if (
-            entry
-            and self.sidePanel.selectedGroupsList
-            and entry not in self.sidePanel.knownApps
-        ):
-            self.sidePanel.knownApps.append(entry)
+        return entry
 
     @api_tool_decorator
     def onRun(self, event):
