@@ -870,12 +870,16 @@ def confirmCommand(cmd, commandType, schedule, schType):
         applyTo = "group"
         isGroup = True
     modal = wx.NO
-    with CmdConfirmDialog(
-        commandType, cmdFormatted, schType, schFormatted, applyTo, label
-    ) as dialog:
-        res = dialog.ShowModal()
-        if res == wx.ID_OK:
-            modal = wx.YES
+    currThreadName = threading.current_thread().name
+    if "main" in currThreadName.lower():
+        with CmdConfirmDialog(
+            commandType, cmdFormatted, schType, schFormatted, applyTo, label
+        ) as dialog:
+            res = dialog.ShowModal()
+            if res == wx.ID_OK:
+                modal = wx.YES
+    else:
+        modal = wx.YES
 
     if modal == wx.YES:
         return True, isGroup
@@ -1021,7 +1025,7 @@ def installAppOnDevices(devices):
         createCommand(
             Globals.frame,
             {
-                "app_version": appVersion.version_code,
+                "app_version": appVersion.id,
                 "package_name": Globals.RESRICTED_APP_PKG_NAME,
             },
             "INSTALL",

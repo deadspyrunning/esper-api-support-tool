@@ -1131,6 +1131,19 @@ class NewFrameLayout(wx.Frame):
             and self.sidePanel.actionChoice.Items[actionSelection]
             else ""
         )
+        if actionClientData == 21:
+            self.gauge.Pulse()
+            wxThread.GUIThread(
+                self,
+                TakeAction,
+                (
+                    self,
+                    None,
+                    actionClientData,
+                    "All Devices",
+                ),
+                name="TakeActionUpdateAll",
+            ).start()
         if (
             self.sidePanel.selectedGroupsList
             and not self.sidePanel.selectedDevicesList
@@ -1347,6 +1360,8 @@ class NewFrameLayout(wx.Frame):
             cmdResult = event
         self.menubar.enableConfigMenu()
         self.setGaugeValue(100)
+        self.toggleEnabledState(True)
+        self.setCursorDefault()
         if cmdResult:
             result = ""
             for res in cmdResult:
