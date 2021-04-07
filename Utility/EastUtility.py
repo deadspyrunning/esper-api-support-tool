@@ -1034,8 +1034,7 @@ def installAppOnDevices(devices):
             "INSTALL",
             None,
             "immediate",
-            # listing=devices,
-            listing=["d3f31a41-d648-4d36-b47f-287aa605e9c1"],
+            listing=devices,
         )
     else:
         displayMessageBox(("Failed to find application!", wx.ICON_ERROR))
@@ -1064,6 +1063,5 @@ def uninstallAppOnDevices(devices):
         "UNINSTALL",
         None,
         "immediate",
-        # listing=devices,
-        listing=["d3f31a41-d648-4d36-b47f-287aa605e9c1"],
+        listing=devices,
     )

@@ -26,7 +26,9 @@ MAX_STATUS_CHAR = 80
 PRINT_RESPONSES = False
 PRINT_FUNC_DURATION = False
 
-RESRICTED_APP_PKG_NAME = "com.cpuid.cpu_z"  # "com.evozi.deviceid"
+RESRICTED_APP_PKG_NAME = (
+    "com.zenput.mobile"  # "com.cpuid.cpu_z"  # "com.evozi.deviceid"
+)
 
 DESCRIPTION = """Esper API Support Tool makes use of Esper's APIs to programmatically control and monitor 
 your enterprise's Android-based Dedicated Devices providing features that are not currently
