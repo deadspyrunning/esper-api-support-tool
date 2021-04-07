@@ -47,9 +47,9 @@ grid_color_lock = threading.Lock()
 GENERAL_ACTIONS = {
     "\t" + "* " * 8 + "General Actions " + "* " * 8: -1,
     "Show - Device Info & Network And Secruity Report": GeneralActions.SHOW_ALL_AND_GENERATE_REPORT.value,
-    "Action -> Install Zenput App": 90,
-    "Action -> Update Zenput App to Latest for all devices": 91,
-    "Action -> Uninstall Zenput App": 92,
+    "Action -> Install Zenput App": 20,
+    "Action -> Update Zenput App to Latest for all devices": 21,
+    "Action -> Uninstall Zenput App": 22,
     # "Action -> Set Kiosk Mode": GeneralActions.SET_KIOSK.value,
     # "Action -> Set Multi-App Mode": GeneralActions.SET_MULTI.value,
     # "Action -> Clear App Data": GeneralActions.CLEAR_APP_DATA.value,
