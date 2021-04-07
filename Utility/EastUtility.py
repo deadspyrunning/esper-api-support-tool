@@ -976,9 +976,10 @@ def installApp(listing, isDevice):
                     devices.append(device.id)
     else:
         devices = listing
-    appVerToUse = Globals.frame.sidePanel.appChoice.GetClientData(
-        Globals.frame.sidePanel.appChoice.GetSelection()
-    )
+    appSelection = Globals.frame.sidePanel.appChoice.GetSelection()
+    appVerToUse = None
+    if appSelection > 0:
+        appVerToUse = Globals.frame.sidePanel.appChoice.GetClientData(appSelection)
     installAppOnDevices(devices, appVerToUse)
 
 
@@ -1021,6 +1022,7 @@ def uploadAppToEndpoint(path):
 
 def installAppOnDevices(devices, version=None):
     appVersion = version
+    appVersionId = version
     if not appVersion:
         appList = apiCalls.getAllApplications(
             packageName=Globals.RESRICTED_APP_PKG_NAME
@@ -1029,12 +1031,13 @@ def installAppOnDevices(devices, version=None):
             if app.package_name == Globals.RESRICTED_APP_PKG_NAME:
                 app.versions.sort(key=lambda s: s.version_code.split("."))
                 appVersion = app.versions[-1]
+                appVersionId = appVersion.id
                 break
     if appVersion:
         createCommand(
             Globals.frame,
             {
-                "app_version": appVersion.id,
+                "app_version": appVersionId,
                 "package_name": Globals.RESRICTED_APP_PKG_NAME,
             },
             "INSTALL",
