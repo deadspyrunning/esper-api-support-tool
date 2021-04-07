@@ -2175,13 +2175,10 @@ class NewFrameLayout(wx.Frame):
                     t.join()
 
     def updateApp(self, event):
-        if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:
-            self.toggleEnabledState(False)
-            self.uploadApplication(None, joinThread=True)
-            t = wxThread.GUIThread(self, updateAppAllDevices, None)
-            t.start()
-        else:
-            displayMessageBox(("Please select a group and or devices!", wx.ICON_ERROR))
+        self.toggleEnabledState(False)
+        self.uploadApplication(None, joinThread=True)
+        t = wxThread.GUIThread(self, updateAppAllDevices, None)
+        t.start()
 
     def uninstallApp(self, event):
         if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:

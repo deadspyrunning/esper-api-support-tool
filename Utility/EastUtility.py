@@ -854,18 +854,20 @@ def confirmCommand(cmd, commandType, schedule, schType):
     applyTo = ""
     commaSeperated = ", "
     if len(Globals.frame.sidePanel.selectedDevicesList) > 0:
-        selections = Globals.frame.sidePanel.deviceMultiDialog.GetSelections()
         label = ""
-        for device in selections:
-            label += device + commaSeperated
+        if Globals.frame.sidePanel.deviceMultiDialog:
+            selections = Globals.frame.sidePanel.deviceMultiDialog.GetSelections()
+            for device in selections:
+                label += device + commaSeperated
         if label.endswith(", "):
             label = label[0 : len(label) - len(commaSeperated)]
         applyTo = "device"
-    elif len(Globals.frame.sidePanel.selectedGroupsList) >= 0:
-        selections = Globals.frame.sidePanel.groupMultiDialog.GetSelections()
+    elif len(Globals.frame.sidePanel.selectedGroupsList) > 0:
         label = ""
-        for group in selections:
-            label += group + commaSeperated
+        if Globals.frame.sidePanel.groupMultiDialog:
+            selections = Globals.frame.sidePanel.groupMultiDialog.GetSelections()
+            for group in selections:
+                label += group + commaSeperated
         if label.endswith(", "):
             label = label[0 : len(label) - len(commaSeperated)]
         applyTo = "group"
