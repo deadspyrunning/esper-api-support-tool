@@ -86,6 +86,9 @@ class ToolMenuBar(wx.MenuBar):
         eqlQueryItem = wx.MenuItem(runMenu, wx.ID_ANY, "&EQL Search (Preview)\tCtrl+F")
         self.eqlQuery = runMenu.Append(eqlQueryItem)
         self.eqlQuery.Enable(False)
+        runMenu.Append(wx.ID_SEPARATOR)
+        uploadItem = wx.MenuItem(runMenu, wx.ID_ANY, "&Upload APK\t")
+        self.upload = runMenu.Append(uploadItem)
 
         viewMenu = wx.Menu()
         self.deviceColumns = viewMenu.Append(

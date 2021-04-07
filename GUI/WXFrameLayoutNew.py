@@ -954,16 +954,16 @@ class NewFrameLayout(wx.Frame):
         if not self.preferences or self.preferences["enableDevice"] == True:
             self.sidePanel.runBtn.Enable(False)
             self.frame_toolbar.EnableTool(self.frame_toolbar.rtool.Id, False)
-            self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, False)
-            self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, False)
+            # self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, False)
+            # self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, False)
             self.setGaugeValue(0)
             self.gauge.Pulse()
         else:
             if not self.isRunning or not self.isBusy:
                 self.sidePanel.runBtn.Enable(True)
                 self.frame_toolbar.EnableTool(self.frame_toolbar.rtool.Id, True)
-                self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, True)
-        self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, True)
+        #         self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, True)
+        # self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, True)
         threads = []
         for clientData in self.sidePanel.selectedGroupsList:
             thread = wxThread.doAPICallInThread(
@@ -2116,7 +2116,7 @@ class NewFrameLayout(wx.Frame):
 
         self.frame_toolbar.EnableTool(self.frame_toolbar.otool.Id, state)
         self.frame_toolbar.EnableTool(self.frame_toolbar.rtool.Id, state)
-        self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, state)
+        # self.frame_toolbar.EnableTool(self.frame_toolbar.rftool.Id, state)
         # self.frame_toolbar.EnableTool(self.frame_toolbar.cmdtool.Id, state)
 
         self.menubar.fileOpenConfig.Enable(state)
@@ -2174,6 +2174,7 @@ class NewFrameLayout(wx.Frame):
 
     def updateApp(self, event):
         if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:
+            self.toggleEnabledState(False)
             t = wxThread.GUIThread(self, updateAppAllDevices, None)
             t.start()
         else:
@@ -2181,6 +2182,7 @@ class NewFrameLayout(wx.Frame):
 
     def uninstallApp(self, event):
         if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:
+            self.toggleEnabledState(False)
             t = wxThread.GUIThread(self, uninstallApp, None)
             t.start()
         else:

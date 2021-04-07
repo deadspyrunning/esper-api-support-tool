@@ -36,17 +36,17 @@ class ToolsToolBar(wx.ToolBar):
         self.rtool = self.AddTool(wx.ID_ANY, "Run Action", exe_icon, "Run Action")
         self.AddSeparator()
 
-        ref_icon = scale_bitmap(resourcePath("Images/refresh.png"), 16, 16)
-        self.rftool = self.AddTool(
-            wx.ID_ANY, "Refresh Grids", ref_icon, "Refresh Grids"
-        )
-        self.AddSeparator()
+        # ref_icon = scale_bitmap(resourcePath("Images/refresh.png"), 16, 16)
+        # self.rftool = self.AddTool(
+        #     wx.ID_ANY, "Refresh Grids", ref_icon, "Refresh Grids"
+        # )
+        # self.AddSeparator()
 
-        cmd_icon = scale_bitmap(resourcePath("Images/command.png"), 16, 16)
-        self.cmdtool = self.AddTool(wx.ID_ANY, "Run Command", cmd_icon, "Run Command")
-        self.EnableTool(self.cmdtool.Id, False)
+        # cmd_icon = scale_bitmap(resourcePath("Images/command.png"), 16, 16)
+        # self.cmdtool = self.AddTool(wx.ID_ANY, "Run Command", cmd_icon, "Run Command")
+        # self.EnableTool(self.cmdtool.Id, False)
 
-        self.AddSeparator()
+        # self.AddSeparator()
 
         up_icon = scale_bitmap(resourcePath("Images/upload.png"), 16, 16)
         self.uptool = self.AddTool(wx.ID_ANY, "Upload APK", up_icon, "Upload APK")
@@ -78,16 +78,16 @@ class ToolsToolBar(wx.ToolBar):
         self.search.ShowCancelButton(True)
 
         self.EnableTool(self.rtool.Id, False)
-        self.EnableTool(self.cmdtool.Id, False)
-        self.EnableTool(self.rftool.Id, False)
+        # self.EnableTool(self.cmdtool.Id, False)
+        # self.EnableTool(self.rftool.Id, False)
 
         self.Bind(wx.EVT_TOOL, self.Parent.OnQuit, self.qtool)
         self.Bind(wx.EVT_TOOL, self.Parent.AddEndpoint, self.atool)
         self.Bind(wx.EVT_TOOL, self.Parent.onUploadCSV, self.otool)
         self.Bind(wx.EVT_TOOL, self.Parent.onSaveBoth, self.stool)
         self.Bind(wx.EVT_TOOL, self.Parent.onRun, self.rtool)
-        self.Bind(wx.EVT_TOOL, self.Parent.updateGrids, self.rftool)
-        self.Bind(wx.EVT_TOOL, self.Parent.onCommand, self.cmdtool)
+        # self.Bind(wx.EVT_TOOL, self.Parent.updateGrids, self.rftool)
+        # self.Bind(wx.EVT_TOOL, self.Parent.onCommand, self.cmdtool)
         self.Bind(wx.EVT_TOOL, self.Parent.uploadApplication, self.uptool)
         self.Bind(wx.EVT_TOOL, self.Parent.updateApp, self.updatetool)
         self.search.Bind(wx.EVT_SEARCH, self.Parent.onSearch)
