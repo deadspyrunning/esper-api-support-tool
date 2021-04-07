@@ -2158,7 +2158,7 @@ class NewFrameLayout(wx.Frame):
                             )
                         )
 
-    def uploadApplication(self, event):
+    def uploadApplication(self, event, joinThread=False):
         with wx.FileDialog(
             self,
             "Upload APK",
@@ -2171,10 +2171,13 @@ class NewFrameLayout(wx.Frame):
                 apk_path = fileDialog.GetPath()
                 t = wxThread.GUIThread(self, uploadAppToEndpoint, (apk_path))
                 t.start()
+                if joinThread:
+                    t.join()
 
     def updateApp(self, event):
         if self.sidePanel.selectedGroupsList or self.sidePanel.selectedDevicesList:
             self.toggleEnabledState(False)
+            self.uploadApplication(None, joinThread=True)
             t = wxThread.GUIThread(self, updateAppAllDevices, None)
             t.start()
         else:
