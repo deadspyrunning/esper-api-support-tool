@@ -184,7 +184,7 @@ class PreferencesDialog(wx.Dialog):
         self.panel_44.SetSizer(grid_sizer_21)
 
         self.spin_ctrl_8 = wx.SpinCtrl(
-            self.panel_44, wx.ID_ANY, min=10, max=100, initial=Globals.MAX_THREAD_COUNT
+            self.panel_44, wx.ID_ANY, min=10, max=50, initial=Globals.MAX_THREAD_COUNT
         )
         grid_sizer_21.Add(self.spin_ctrl_8, 0, wx.ALIGN_RIGHT | wx.EXPAND, 0)
 
