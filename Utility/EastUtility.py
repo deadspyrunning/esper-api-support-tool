@@ -1046,7 +1046,13 @@ def installAppOnDevices(devices, version=None):
             listing=devices,
         )
     else:
-        displayMessageBox(("Failed to find application!", wx.ICON_ERROR))
+        displayMessageBox(
+            (
+                "Failed to find application! Please upload application (%s) to the endpoint."
+                % Globals.RESRICTED_APP_PKG_NAME,
+                wx.ICON_ERROR,
+            )
+        )
         postEventToFrame(wxThread.myEVT_COMPLETE, True)
 
 
