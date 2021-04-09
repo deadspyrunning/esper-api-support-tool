@@ -1047,6 +1047,7 @@ def installAppOnDevices(devices, version=None):
         )
     else:
         displayMessageBox(("Failed to find application!", wx.ICON_ERROR))
+        postEventToFrame(wxThread.myEVT_COMPLETE, True)
 
 
 def uninstallApp(listing, isDevice):
