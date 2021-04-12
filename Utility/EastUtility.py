@@ -49,6 +49,9 @@ def TakeAction(frame, group, action, label, isDevice=False, isUpdate=False):
             frame.gridPanel.grid_2.Freeze()
         frame.CSVUploaded = False
 
+    if action == GeneralActions.POWER_DOWN.value:
+        powerDownDevices(group)
+
     deviceList = None
     if isDevice:
         deviceToUse = group
@@ -947,3 +950,19 @@ def setAppStateForSpecificAppListed(action, maxAttempt=Globals.MAX_RETRY):
             name="waitTillThreadsFinish%s" % state,
         )
         t.start()
+
+
+def powerDownDevices(listing):
+    createCommand(
+        Globals.frame,
+        {
+            "custom_settings_config": {
+                "dpcParams": [{"key": "powerOff", "value": "true"}]
+            }
+        },
+        "UPDATE_DEVICE_CONFIG",
+        None,
+        "immediate",
+        listing=listing,
+    )
+    postEventToFrame(wxThread.myEVT_COMPLETE, True)

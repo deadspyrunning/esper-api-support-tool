@@ -51,6 +51,7 @@ GENERAL_ACTIONS = {
     "Action -> Set App's State to Disable": GeneralActions.SET_APP_STATE_DISABLE.value,
     "Action -> Set App's State to Hide": GeneralActions.SET_APP_STATE_HIDE.value,
     "Action -> Set App's State to Show": GeneralActions.SET_APP_STATE_SHOW.value,
+    "Action -> Power Down Device": GeneralActions.POWER_DOWN.value,
 }
 
 GRID_ACTIONS = {
