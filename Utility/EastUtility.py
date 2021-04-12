@@ -967,15 +967,15 @@ def setAppStateForSpecificAppListed(action, maxAttempt=Globals.MAX_RETRY):
 
 def installApp(listing, isDevice):
     devices = []
-    if not isDevice:
-        for entry in listing:
-            resp = apiCalls.getAllDevices(entry)
-            devices = []
-            for device in resp.results:
-                if device.id not in devices:
-                    devices.append(device.id)
-    else:
-        devices = listing
+    # if not isDevice:
+    #     for entry in listing:
+    #         resp = apiCalls.getAllDevices(entry)
+    #         devices = []
+    #         for device in resp.results:
+    #             if device.id not in devices:
+    #                 devices.append(device.id)
+    # else:
+    devices = listing
     appSelection = Globals.frame.sidePanel.appChoice.GetSelection()
     appVerToUse = None
     if appSelection > 0:
@@ -1018,6 +1018,7 @@ def uploadAppToEndpoint(path):
                 wx.ICON_ERROR,
             )
         )
+    postEventToFrame(wxThread.myEVT_COMPLETE, True)
 
 
 def installAppOnDevices(devices, version=None):
@@ -1053,7 +1054,7 @@ def installAppOnDevices(devices, version=None):
                 wx.ICON_ERROR,
             )
         )
-        postEventToFrame(wxThread.myEVT_COMPLETE, True)
+    postEventToFrame(wxThread.myEVT_COMPLETE, True)
 
 
 def uninstallApp(listing, isDevice):
@@ -1081,3 +1082,4 @@ def uninstallAppOnDevices(devices):
         "immediate",
         listing=devices,
     )
+    postEventToFrame(wxThread.myEVT_COMPLETE, True)

@@ -844,36 +844,36 @@ class NewFrameLayout(wx.Frame):
                 self.sidePanel.deviceChoice.Enable(False)
                 self.Logging("---> No Devices found")
             else:
-                if (
-                    self.preferences
-                    and "getAppsForEachDevice" in self.preferences
-                    and self.preferences["getAppsForEachDevice"]
-                ):
-                    newThreads = []
-                    self.Logging("---> Attempting to populate Application list")
-                    self.gauge.Pulse()
-                    for deviceId in self.sidePanel.devices.values():
-                        thread = wxThread.doAPICallInThread(
-                            self,
-                            getdeviceapps,
-                            args=(deviceId, True, Globals.USE_ENTERPRISE_APP),
-                            eventType=wxThread.myEVT_APPS,
-                            waitForJoin=False,
-                            name="GetDeviceAppsToPopulateApps",
-                        )
-                        newThreads.append(thread)
-                        limitActiveThreads(newThreads)
-                    num = 0
-                    for thread in newThreads:
-                        thread.join()
-                        num += 1
-                        if (
-                            not self.preferences
-                            or self.preferences["enableDevice"] == True
-                        ):
-                            self.setGaugeValue(
-                                int(float(num / len(newThreads) / 2) * 100)
-                            )
+                # if (
+                #     self.preferences
+                #     and "getAppsForEachDevice" in self.preferences
+                #     and self.preferences["getAppsForEachDevice"]
+                # ):
+                # newThreads = []
+                # self.Logging("---> Attempting to populate Application list")
+                # self.gauge.Pulse()
+                # for deviceId in self.sidePanel.devices.values():
+                #     thread = wxThread.doAPICallInThread(
+                #         self,
+                #         getdeviceapps,
+                #         args=(deviceId, True, Globals.USE_ENTERPRISE_APP),
+                #         eventType=wxThread.myEVT_APPS,
+                #         waitForJoin=False,
+                #         name="GetDeviceAppsToPopulateApps",
+                #     )
+                #     newThreads.append(thread)
+                #     limitActiveThreads(newThreads)
+                # num = 0
+                # for thread in newThreads:
+                #     thread.join()
+                #     num += 1
+                #     if (
+                #         not self.preferences
+                #         or self.preferences["enableDevice"] == True
+                #     ):
+                #         self.setGaugeValue(
+                #             int(float(num / len(newThreads) / 2) * 100)
+                #         )
                 self.sidePanel.sortAndPopulateAppChoice()
                 self.Logging("---> Application list populated")
                 if not self.isRunning:
