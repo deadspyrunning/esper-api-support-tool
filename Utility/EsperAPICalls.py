@@ -774,11 +774,14 @@ def executeCommandOnGroup(
     schedule=None,
     schedule_type="IMMEDIATE",
     command_type="UPDATE_DEVICE_CONFIG",
+    groups=None,
     maxAttempt=Globals.MAX_RETRY,
 ):
     """ Execute a Command on a Group of Devices """
     statusList = []
-    for groupToUse in frame.sidePanel.selectedGroupsList:
+    if not groups:
+        groups = frame.sidePanel.selectedGroupsList
+    for groupToUse in groups:
         request = esperclient.V0CommandRequest(
             enterprise=Globals.enterprise_id,
             command_type="GROUP",
@@ -823,11 +826,14 @@ def executeCommandOnDevice(
     schedule=None,
     schedule_type="IMMEDIATE",
     command_type="UPDATE_DEVICE_CONFIG",
+    devices=None,
     maxAttempt=Globals.MAX_RETRY,
 ):
     """ Execute a Command on a Device """
     statusList = []
-    for deviceToUse in frame.sidePanel.selectedDevicesList:
+    if not devices:
+        devices = frame.sidePanel.selectedDevicesList
+    for deviceToUse in devices:
         request = esperclient.V0CommandRequest(
             enterprise=Globals.enterprise_id,
             command_type="DEVICE",

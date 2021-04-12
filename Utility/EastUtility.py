@@ -801,7 +801,7 @@ def setAllAppsState(frame, device, state):
 
 
 @api_tool_decorator
-def createCommand(frame, command_args, commandType, schedule, schType):
+def createCommand(frame, command_args, commandType, schedule, schType, listing=None):
     """ Attempt to apply a Command given user specifications """
     result, isGroup = confirmCommand(command_args, commandType, schedule, schType)
 
@@ -816,7 +816,7 @@ def createCommand(frame, command_args, commandType, schedule, schType):
         t = wxThread.GUIThread(
             frame,
             apiCalls.executeCommandOnGroup,
-            args=(frame, command_args, schedule, schType, commandType),
+            args=(frame, command_args, schedule, schType, commandType, listing),
             eventType=wxThread.myEVT_COMMAND,
             name="executeCommandOnGroup",
         )
@@ -824,7 +824,7 @@ def createCommand(frame, command_args, commandType, schedule, schType):
         t = wxThread.GUIThread(
             frame,
             apiCalls.executeCommandOnDevice,
-            args=(frame, command_args, schedule, schType, commandType),
+            args=(frame, command_args, schedule, schType, commandType, listing),
             eventType=wxThread.myEVT_COMMAND,
             name="executeCommandOnDevice",
         )
@@ -864,12 +864,16 @@ def confirmCommand(cmd, commandType, schedule, schType):
         applyTo = "group"
         isGroup = True
     modal = wx.NO
-    with CmdConfirmDialog(
-        commandType, cmdFormatted, schType, schFormatted, applyTo, label
-    ) as dialog:
-        res = dialog.ShowModal()
-        if res == wx.ID_OK:
-            modal = wx.YES
+    currThreadName = threading.current_thread().name
+    if "main" in currThreadName.lower():
+        with CmdConfirmDialog(
+            commandType, cmdFormatted, schType, schFormatted, applyTo, label
+        ) as dialog:
+            res = dialog.ShowModal()
+            if res == wx.ID_OK:
+                modal = wx.YES
+    else:
+        modal = wx.YES
 
     if modal == wx.YES:
         return True, isGroup
