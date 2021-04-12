@@ -1191,6 +1191,7 @@ class NewFrameLayout(wx.Frame):
                 displayMessageBox(
                     ("Please select a valid application", wx.OK | wx.ICON_ERROR)
                 )
+                self.isRunning = False
                 self.setCursorDefault()
                 self.toggleEnabledState(True)
                 return
@@ -1238,6 +1239,7 @@ class NewFrameLayout(wx.Frame):
                 displayMessageBox(
                     ("Please select a valid application", wx.OK | wx.ICON_ERROR)
                 )
+                self.isRunning = False
                 self.setCursorDefault()
                 self.toggleEnabledState(True)
                 return
@@ -1312,6 +1314,7 @@ class NewFrameLayout(wx.Frame):
                         wx.OK | wx.ICON_ERROR,
                     )
                 )
+                self.isRunning = False
                 self.setCursorDefault()
                 self.toggleEnabledState(True)
         else:
@@ -1321,6 +1324,7 @@ class NewFrameLayout(wx.Frame):
                     wx.OK | wx.ICON_ERROR,
                 )
             )
+            self.isRunning = False
             self.setCursorDefault()
             self.toggleEnabledState(True)
 
