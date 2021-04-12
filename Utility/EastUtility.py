@@ -969,4 +969,3 @@ def powerDownDevices(listing):
         "immediate",
         listing=listing,
     )
-    postEventToFrame(wxThread.myEVT_COMPLETE, True)
