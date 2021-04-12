@@ -813,7 +813,8 @@ def executeCommandOnGroup(
             except Exception as e:
                 if attempt == maxAttempt - 1:
                     ApiToolLog().LogError(e)
-                    raise e
+                    if hasattr(e, "body") and "invalid group id" not in e.body:
+                        raise e
                 time.sleep(Globals.RETRY_SLEEP)
         ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
         last_status = waitForCommandToFinish(
@@ -865,7 +866,8 @@ def executeCommandOnDevice(
             except Exception as e:
                 if attempt == maxAttempt - 1:
                     ApiToolLog().LogError(e)
-                    raise e
+                    if hasattr(e, "body") and "invalid device id" not in e.body:
+                        raise e
                 time.sleep(Globals.RETRY_SLEEP)
         ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
         last_status = waitForCommandToFinish(
