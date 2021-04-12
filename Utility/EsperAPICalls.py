@@ -816,17 +816,18 @@ def executeCommandOnGroup(
                     if hasattr(e, "body") and "invalid group id" not in e.body:
                         raise e
                 time.sleep(Globals.RETRY_SLEEP)
-        ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
-        last_status = waitForCommandToFinish(
-            frame, api_response.id, ignoreQueue=ignoreQueued
-        )
-        if hasattr(last_status, "state"):
-            entry = {"Group": groupToUse, "Status": last_status.state}
-            if hasattr(last_status, "reason"):
-                entry["Reason"] = last_status.reason
-            statusList.append(entry)
-        else:
-            statusList.append({"Group": groupToUse, "Status": last_status})
+        if api_response:
+            ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
+            last_status = waitForCommandToFinish(
+                frame, api_response.id, ignoreQueue=ignoreQueued
+            )
+            if hasattr(last_status, "state"):
+                entry = {"Group": groupToUse, "Status": last_status.state}
+                if hasattr(last_status, "reason"):
+                    entry["Reason"] = last_status.reason
+                statusList.append(entry)
+            else:
+                statusList.append({"Group": groupToUse, "Status": last_status})
     return statusList
 
 
@@ -869,17 +870,18 @@ def executeCommandOnDevice(
                     if hasattr(e, "body") and "invalid device id" not in e.body:
                         raise e
                 time.sleep(Globals.RETRY_SLEEP)
-        ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
-        last_status = waitForCommandToFinish(
-            frame, api_response.id, ignoreQueue=ignoreQueued
-        )
-        if hasattr(last_status, "state"):
-            entry = {"Device": deviceToUse, "status": last_status.state}
-            if hasattr(last_status, "reason"):
-                entry["Reason"] = last_status.reason
-            statusList.append(entry)
-        else:
-            statusList.append({"Device": deviceToUse, "Status": last_status})
+        if api_response:
+            ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
+            last_status = waitForCommandToFinish(
+                frame, api_response.id, ignoreQueue=ignoreQueued
+            )
+            if hasattr(last_status, "state"):
+                entry = {"Device": deviceToUse, "status": last_status.state}
+                if hasattr(last_status, "reason"):
+                    entry["Reason"] = last_status.reason
+                statusList.append(entry)
+            else:
+                statusList.append({"Device": deviceToUse, "Status": last_status})
     return statusList
 
 
