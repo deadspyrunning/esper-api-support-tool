@@ -967,14 +967,6 @@ def setAppStateForSpecificAppListed(action, maxAttempt=Globals.MAX_RETRY):
 
 def installApp(listing, isDevice):
     devices = []
-    # if not isDevice:
-    #     for entry in listing:
-    #         resp = apiCalls.getAllDevices(entry)
-    #         devices = []
-    #         for device in resp.results:
-    #             if device.id not in devices:
-    #                 devices.append(device.id)
-    # else:
     devices = listing
     appSelection = Globals.frame.sidePanel.appChoice.GetSelection()
     appVerToUse = None
@@ -1059,14 +1051,6 @@ def installAppOnDevices(devices, version=None):
 
 def uninstallApp(listing, isDevice):
     devices = []
-    # if not isDevice:
-    #     for entry in listing:
-    #         resp = apiCalls.getAllDevices(entry)
-    #         devices = []
-    #         for device in resp.results:
-    #             if device.id not in devices:
-    #                 devices.append(device.id)
-    # else:
     devices = listing
     uninstallAppOnDevices(devices)
 
