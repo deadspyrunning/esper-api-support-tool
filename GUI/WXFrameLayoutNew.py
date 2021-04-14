@@ -1174,6 +1174,7 @@ class NewFrameLayout(wx.Frame):
                 ),
                 name="TakeActionUpdateAll",
             ).start()
+            return
         if (
             self.sidePanel.selectedGroupsList
             and not self.sidePanel.selectedDevicesList
