@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import requests
+from datetime import datetime, timedelta
 import esperclient
 import time
 import json
@@ -160,7 +160,7 @@ def toggleKioskMode(
     status = response.results[0].state
     ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
     status = waitForCommandToFinish(
-        frame, api_response.id, ignoreQueue=ignoreQueued, timeout=timeout
+        api_response.id, ignoreQueue=ignoreQueued, timeout=timeout
     )
     return status
 
@@ -257,6 +257,15 @@ def getdeviceapps(deviceid, createAppList=True, useEnterprise=False):
 
 
 @api_tool_decorator
+def getLatestEvent(deviceId):
+    json_resp = getInfo(Globals.DEVICE_STATUS_REQUEST_EXTENSION, deviceId)
+    respData = None
+    if json_resp["results"]:
+        respData = json_resp["results"][0]["data"]
+    return respData
+
+
+@api_tool_decorator
 def getkioskmodeapp(deviceid):
     """Retrieves The Kiosk Mode Application ID"""
     json_resp = getInfo(Globals.DEVICE_STATUS_REQUEST_EXTENSION, deviceid)
@@ -316,12 +325,37 @@ def setdevicename(
     """Pushes New Name To Name"""
     api_instance = getCommandsApiInstance()
     args = esperclient.V0CommandArgs(device_alias_name=devicename)
+    now = datetime.now()
+    start = now + timedelta(minutes=1)
+    end = now + timedelta(days=14, minutes=1)
+    startDate = start.strftime("%Y-%m-%dT%H:%M:%SZ")
+    endDate = end.strftime("%Y-%m-%dT%H:%M:%SZ")
+    startTime = end.strftime("%H:%M:%S")
+    endTime = end.strftime("%H:%M:%S")
     command = esperclient.V0CommandRequest(
         command_type="DEVICE",
         devices=[deviceid],
         command="UPDATE_DEVICE_CONFIG",
         command_args=args,
         device_type=Globals.CMD_DEVICE_TYPE,
+        schedule=esperclient.V0CommandScheduleEnum.WINDOW,
+        schedule_args=esperclient.V0CommandScheduleArgs(
+            days=[
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ],
+            name="%s_%s_%s" % (deviceid, devicename, datetime.now()),
+            time_type="device",
+            start_datetime=startDate,
+            end_datetime=endDate,
+            window_end_time=startTime,
+            window_start_time=endTime,
+        ),
     )
     api_response = None
     for attempt in range(maxAttempt):
@@ -329,6 +363,9 @@ def setdevicename(
             api_response = api_instance.create_command(Globals.enterprise_id, command)
             break
         except Exception as e:
+            if hasattr(e, "body") and "invalid device id" in e.body:
+                logBadResponse("create command api", api_response, None)
+                return None
             if attempt == maxAttempt - 1:
                 ApiToolLog().LogError(e)
                 raise e
@@ -346,7 +383,7 @@ def setdevicename(
                 raise e
             time.sleep(Globals.RETRY_SLEEP)
     status = response.results[0].state
-    status = waitForCommandToFinish(frame, api_response.id, ignoreQueue, timeout)
+    status = waitForCommandToFinish(api_response.id, ignoreQueue, timeout)
     return status
 
 
@@ -488,6 +525,13 @@ def getAllDevices(groupToUse, maxAttempt=Globals.MAX_RETRY):
                         if attempt == maxAttempt - 1:
                             ApiToolLog().LogError(e)
                             raise e
+                        if hasattr(e, "status") and e.status == 504:
+                            Globals.limit = int(Globals.limit / 4)
+                            postEventToFrame(
+                                wxThread.myEVT_LOG,
+                                "---> Encountered a 504 error, retrying with lower limit: %s"
+                                % Globals.limit,
+                            )
                         time.sleep(Globals.RETRY_SLEEP)
                 if not api_response:
                     api_response = response
@@ -507,6 +551,13 @@ def getAllDevices(groupToUse, maxAttempt=Globals.MAX_RETRY):
                     if attempt == maxAttempt - 1:
                         ApiToolLog().LogError(e)
                         raise e
+                    if hasattr(e, "status") and e.status == 504:
+                        Globals.limit = int(Globals.limit / 4)
+                        postEventToFrame(
+                            wxThread.myEVT_LOG,
+                            "---> Encountered a 504 error, retrying with lower limit: %s"
+                            % Globals.limit,
+                        )
                     time.sleep(Globals.RETRY_SLEEP)
         postEventToFrame(wxThread.myEVT_LOG, "---> Device API Request Finished")
         return api_response
@@ -638,6 +689,7 @@ def getTokenInfo(maxAttempt=Globals.MAX_RETRY):
     except ApiException as e:
         print("Exception when calling TokenApi->get_token_info: %s\n" % e)
         ApiToolLog().LogError(e)
+        return e
 
 
 @api_tool_decorator
@@ -704,20 +756,28 @@ def setKiosk(frame, device, deviceInfo):
             postEventToFrame(wxThread.myEVT_ON_FAILED, deviceInfo)
         if warning:
             postEventToFrame(wxThread.myEVT_ON_FAILED, (device, "Queued"))
-        if hasattr(status, "state"):
+        if status and hasattr(status, "state"):
             entry = {
                 "Esper Name": device.device_name,
                 "Device Id": device.id,
-                "Status": status.state,
             }
+            if hasattr(status, "id"):
+                entry["Command Id"] = status.id
+            entry["Status"] = status.state
             if hasattr(status, "reason"):
                 entry["Reason"] = status.reason
             return entry
-        else:
+        elif status:
             return {
                 "Esper Name": device.device_name,
                 "Device Id": device.id,
                 "Status": status,
+            }
+        else:
+            return {
+                "Esper Name": device.device_name,
+                "Device Id": device.id,
+                "Status": "Already Kiosk mode",
             }
 
 
@@ -758,16 +818,24 @@ def setMulti(frame, device, deviceInfo):
         entry = {
             "Esper Name": device.device_name,
             "Device Id": device.id,
-            "Status": status.state,
         }
+        if hasattr(status, "id"):
+            entry["Command Id"] = status.id
+        entry["Status"] = status.state
         if hasattr(status, "reason"):
             entry["Reason"] = status.reason
         return entry
-    else:
+    elif status:
         return {
             "Esper Name": device.device_name,
             "Device Id": device.id,
             "Status": status,
+        }
+    else:
+        return {
+            "Esper Name": device.device_name,
+            "Device Id": device.id,
+            "Status": "Already Multi mode",
         }
 
 
@@ -819,7 +887,7 @@ def executeCommandOnGroup(
         if api_response:
             ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
             last_status = waitForCommandToFinish(
-                frame, api_response.id, ignoreQueue=ignoreQueued
+                api_response.id, ignoreQueue=ignoreQueued
             )
             if hasattr(last_status, "state"):
                 entry = {"Group": groupToUse, "Status": last_status.state}
@@ -873,7 +941,7 @@ def executeCommandOnDevice(
         if api_response:
             ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
             last_status = waitForCommandToFinish(
-                frame, api_response.id, ignoreQueue=ignoreQueued
+                api_response.id, ignoreQueue=ignoreQueued
             )
             if hasattr(last_status, "state"):
                 entry = {"Device": deviceToUse, "status": last_status.state}
@@ -885,9 +953,30 @@ def executeCommandOnDevice(
     return statusList
 
 
+def executeCommandAndWait(request, maxAttempt=Globals.MAX_RETRY):
+    api_instance = getCommandsApiInstance()
+    api_response = None
+    for attempt in range(maxAttempt):
+        try:
+            api_response = api_instance.create_command(Globals.enterprise_id, request)
+            break
+        except Exception as e:
+            if hasattr(e, "body") and (
+                "invalid device id" in e.body or "invalid group id" in e.body
+            ):
+                logBadResponse("create command api", api_response, None)
+                return None
+            if attempt == maxAttempt - 1:
+                ApiToolLog().LogError(e)
+                raise e
+            time.sleep(Globals.RETRY_SLEEP)
+    ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
+    last_status = waitForCommandToFinish(api_response.id, ignoreQueue=ignoreQueued)
+    return last_status
+
+
 @api_tool_decorator
 def waitForCommandToFinish(
-    frame,
     request_id,
     ignoreQueue=False,
     timeout=Globals.COMMAND_TIMEOUT,
@@ -1143,9 +1232,7 @@ def setAppState(
                     raise e
                 time.sleep(1)
         ignoreQueued = False if Globals.REACH_QUEUED_ONLY else True
-        return waitForCommandToFinish(
-            Globals.frame, api_response.id, ignoreQueue=ignoreQueued
-        )
+        return waitForCommandToFinish(api_response.id, ignoreQueue=ignoreQueued)
 
 
 def getApplication(application_id):
