@@ -544,10 +544,10 @@ class NewFrameLayout(wx.Frame):
             Globals.CSV_NETWORK_ATTR_NAME,
             Globals.grid2_lock,
         )
-        indx = self.sidePanel.actionChoice.GetItems().index(
-            list(Globals.GRID_ACTIONS.keys())[1]
-        )
-        self.sidePanel.actionChoice.SetSelection(indx)
+        # indx = self.sidePanel.actionChoice.GetItems().index(
+        #     list(Globals.GRID_ACTIONS.keys())[1]
+        # )
+        # self.sidePanel.actionChoice.SetSelection(indx)
         if self.gridPanel.grid_1.IsFrozen():
             self.gridPanel.grid_1.Thaw()
         if self.gridPanel.grid_2.IsFrozen():
